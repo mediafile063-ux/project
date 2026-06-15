@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Sister's Birthday ✨</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+      background: #fff9fb;
+      color: #3e2c3a;
+      line-height: 1.5;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+
+    /* smooth scrolling */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* floating hearts canvas background */
+    canvas#heartsCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* header & logo */
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 32px;
+      background: rgba(255, 245, 250, 0.8);
+      backdrop-filter: blur(14px);
+      position: sticky;
+      top: 0;
+      z-index: 99;
+      box-shadow: 0 4px 20px rgba(255, 192, 203, 0.2);
+      border-bottom: 1px solid #ffe0ec;
+    }
+
+    .logo {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, #e75480, #f7a1c4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-shadow: 2px 2px 8px rgba(231, 84, 128, 0.2);
+    }
+
+    .logo span {
+      font-size: 2.2rem;
+    }
+
+    /* hero section */
+    .hero {
+      min-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 30px 20px;
+      animation: fadeInUp 1.2s ease;
+      background: radial-gradient(circle at 20% 30%, #ffe9f2, #fff0f5);
+    }
+
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(40px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.8rem, 8vw, 5.5rem);
+      font-weight: 800;
+      background: linear-gradient(to right, #d43f6b, #f78ca0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 24px;
+      line-height: 1.2;
+      letter-spacing: -0.5px;
+      filter: drop-shadow(0 6px 12px rgba(212, 63, 107, 0.2));
+    }
+
+    .hero-photo-wrapper {
+      margin: 30px 0 20px;
+      max-width: 700px;
+      width: 100%;
+      border-radius: 48px;
+      overflow: hidden;
+      box-shadow: 0 30px 50px rgba(233, 120, 150, 0.35);
+      background: #ffe4ec;
+      transition: transform 0.3s;
+      border: 3px solid white;
+      animation: softGlow 2s infinite alternate;
+    }
+
+    @keyframes softGlow {
+      0% { box-shadow: 0 20px 45px rgba(245, 112, 144, 0.3); }
+      100% { box-shadow: 0 25px 55px rgba(240, 98, 136, 0.55); }
+    }
+
+    .hero-photo-placeholder {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(145deg, #fbc2d9, #fad0e1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      color: #b3446c;
+      font-weight: 500;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="%23f092b0" opacity="0.2"><circle cx="50" cy="45" r="30"/><circle cx="30" cy="75" r="20"/><circle cx="70" cy="75" r="22"/></svg>');
+      background-size: cover;
+      background-blend-mode: overlay;
+      text-shadow: 0 2px 5px white;
+      letter-spacing: 2px;
+    }
+
+    /* gallery section */
+    .gallery-section {
+      padding: 70px 24px;
+      background: #fff5f9;
+    }
+
+    .section-title {
+      font-size: 2.8rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 48px;
+      color: #b3415c;
+      position: relative;
+      display: inline-block;
+      left: 50%;
+      transform: translateX(-50%);
+      letter-spacing: -0.5px;
+    }
+
+    .section-title:after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 20%;
+      width: 60%;
+      height: 4px;
+      background: #f7a1c4;
+      border-radius: 20px;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 28px;
+      margin-top: 20px;
+    }
+
+    .memory-card {
+      background: white;
+      border-radius: 32px;
+      overflow: hidden;
+      box-shadow: 0 18px 30px rgba(245, 154, 178, 0.2);
+      transition: all 0.35s ease;
+      cursor: pointer;
+      border: 2px solid #ffe4ef;
+      position: relative;
+    }
+
+    .memory-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 28px 45px rgba(231, 84, 128, 0.3);
+      border-color: #f78ca0;
+    }
+
+    .card-media {
+      height: 220px;
+      background: #fce4ec;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      font-weight: 600;
+      color: #b34e6b;
+      background-size: cover;
+      background-position: center;
+      transition: 0.3s;
+    }
+
+    .icon-overlay {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 8px 15px rgba(0,0,0,0.08);
+    }
+
+    .photo-icon::before {
+      content: "📸";
+    }
+    .video-icon::before {
+      content: "🎬";
+    }
+
+    .card-caption {
+      padding: 16px 12px;
+      text-align: center;
+      font-weight: 600;
+      color: #5a3e4b;
+      background: #fff0f5;
+      font-size: 0.95rem;
+    }
+
+    /* wishes comment section */
+    .wishes-section {
+      padding: 70px 24px;
+      background: #ffffff;
+      border-radius: 70px 70px 0 0;
+      margin-top: -30px;
+      box-shadow: 0 -10px 30px rgba(255, 192, 203, 0.2);
+    }
+
+    .comment-form {
+      background: #fff5fa;
+      padding: 30px;
+      border-radius: 40px;
+      max-width: 700px;
+      margin: 0 auto 40px;
+      box-shadow: 0 15px 30px rgba(231, 132, 157, 0.15);
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 15px 20px;
+      border: 2px solid #fcd5e4;
+      border-radius: 30px;
+      font-size: 1rem;
+      background: white;
+      transition: 0.2s;
+      outline: none;
+      font-family: inherit;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #e75480;
+      box-shadow: 0 0 0 4px rgba(231,84,128,0.15);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #e75480, #f280a1);
+      border: none;
+      color: white;
+      font-weight: 700;
+      padding: 15px 30px;
+      border-radius: 40px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: 0.25s;
+      width: 100%;
+      letter-spacing: 0.5px;
+      box-shadow: 0 10px 18px rgba(231,84,128,0.3);
+    }
+
+    .btn:hover {
+      background: linear-gradient(135deg, #d43f6b, #e96b8c);
+      transform: scale(1.02);
+      box-shadow: 0 15px 25px rgba(200, 60, 100, 0.4);
+    }
+
+    .comments-feed {
+      max-width: 700px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .comment-card {
+      background: #fff9fc;
+      border-radius: 28px;
+      padding: 20px 24px;
+      box-shadow: 0 10px 20px rgba(245, 150, 170, 0.15);
+      border: 1px solid #ffe0ec;
+      animation: fadeInComment 0.4s ease;
+    }
+
+    @keyframes fadeInComment {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .comment-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .comment-name {
+      font-weight: 700;
+      color: #c73d63;
+      font-size: 1.2rem;
+    }
+
+    .comment-time {
+      font-size: 0.8rem;
+      color: #b98b9b;
+    }
+
+    .comment-text {
+      color: #4a3340;
+      margin: 6px 0 12px;
+      font-size: 1rem;
+    }
+
+    .like-btn {
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #d4728b;
+      transition: 0.2s;
+      padding: 6px 12px;
+      border-radius: 20px;
+      background: #ffeaf1;
+    }
+
+    .like-btn.liked {
+      color: #e63956;
+      background: #ffd0da;
+    }
+
+    /* footer */
+    .footer {
+      background: #fce4ec;
+      padding: 50px 24px 30px;
+      text-align: center;
+      border-radius: 60px 60px 0 0;
+      margin-top: 40px;
+    }
+
+    .thankyou {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #b33c5a;
+      margin-bottom: 30px;
+    }
+
+    .contact-details {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 35px;
+      font-size: 1.1rem;
+      background: white;
+      padding: 25px 35px;
+      border-radius: 50px;
+      display: inline-flex;
+      box-shadow: 0 10px 25px rgba(231,132,157,0.2);
+      margin-bottom: 25px;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 500;
+    }
+
+    .contact-item span:first-child {
+      font-size: 1.5rem;
+    }
+
+    .footer-note {
+      color: #884c5e;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .site-header {
+        padding: 15px 20px;
+      }
+      .logo {
+        font-size: 1.6rem;
+      }
+      .contact-details {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="heartsCanvas"></canvas>
+  
+  <header class="site-header">
+    <div class="logo">
+      <span>✨</span> Sis's Day <span>🌸</span>
+    </div>
+    <div style="font-weight:500; color:#b3446c;">🎀 For my favorite sister</div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <h1>Happy Birthday, Sister!</h1>
+    <div class="hero-photo-wrapper">
+      <!-- ADD YOUR MAIN BIG HERO PHOTO HERE -->
+      <div class="hero-photo-placeholder">
+        <img src="s1.jpeg" alt="Sister's Birthday Photo" width="100%" height="auto">
+      </div>
+    </div>
+    <p style="margin-top:20px; font-size:1.3rem; color:#b14b64; max-width:500px;">You are the sparkle of our lives. Love you endlessly.</p>
+  </section>
+
+  <!-- PHOTO & VIDEO GALLERY -->
+  <section class="gallery-section">
+    <h2 class="section-title">📷 Precious Memories</h2>
+    <div class="gallery-grid">
+      
+      <!-- PHOTO CLIP PLACEHOLDER START -->
+      <div class="memory-card">
+        <div class="card-media" style="background-image: linear-gradient(135deg, #f9d8e6, #fbc2d2);">
+          <div class="icon-overlay photo-icon"></div>
+          <span style="color:#b3446c; font-weight:600;">🌸<img src="s6.jpeg" alt="Sister's Birthday Photo" width="100%" height="auto">
+</span> </span>
+          
+        </div>
+        <div class="card-caption">Photo · Sister's glow</div>
+      </div>
+      <!-- PHOTO CLIP PLACEHOLDER END -->
+      
+      <!-- VIDEO CLIP PLACEHOLDER START -->
+     <div class="memory-card">
+  <div class="card-media" style="position: relative; overflow: hidden; border-radius: 15px;">
+    <!-- Actual video tag added here with playback controls -->
+    <video controls style="width: 100%; height: 100%; object-fit: cover; display: block;">
+      <source src="s7.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    
+    <!-- Top Overlay Label with your pink color hex code (#b3446c) -->
+    <div class="icon-overlay video-icon" style="position: absolute; top: 10px; left: 10px; background: rgba(255, 255, 255, 0.85); padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; color: #b3446c; pointer-events: none;">
+      🎥 Birthday dance
+    </div>
+  </div>
+  <!-- Bottom Caption -->
+  <div class="card-caption" style="padding: 10px; text-align: center; font-weight: bold; color: #b3446c;">
+    Video · Celebration Vibe 🎉
+  </div>
+</div>
+
+      <!-- VIDEO CLIP PLACEHOLDER END -->
+      
+      <!-- PHOTO CLIP PLACEHOLDER START -->
+      <div class="memory-card">
+        <div class="card-media" style="background-image: linear-gradient(135deg, #fde2e9, #f8c1d0);">
+          <div class="icon-overlay photo-icon"></div>
+          <span>📸 <img src="s5.jpeg" alt="Sister's Birthday Photo" width="100%" height="auto">
+</span>
+        </div>
+        <div class="card-caption">Photo · Together forever</div>
+      </div>
+      <!-- PHOTO CLIP PLACEHOLDER END -->
+      
+      <!-- VIDEO CLIP PLACEHOLDER START -->
+      <div class="memory-card">
+        <div class="card-media" style="position: relative; overflow: hidden; border-radius: 15px;">
+          <video controls style="width: 100%; height: 100%; object-fit: cover; display: block;">
+            <source src="s4.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+        <div class="card-caption">Video · Cake cutting</div>
+      </div>
+      <!-- VIDEO CLIP PLACEHOLDER END -->
+      
+      <!-- PHOTO CLIP PLACEHOLDER START -->
+      <div class="memory-card">
+        <div class="card-media" style="background-image: linear-gradient(135deg, #fad2e1, #f7a7c1);">
+          <div class="icon-overlay photo-icon"></div>
+          <span>📸 <img src="s3.jpeg" alt="Sister's Birthday Photo" width="100%" height="auto">
+</span>
+        </div>
+        <div class="card-caption">Photo · Gorgeous you</div>
+      </div>
+      <!-- PHOTO CLIP PLACEHOLDER END -->
+      
+      <!-- VIDEO CLIP PLACEHOLDER START -->
+      <div class="memory-card">
+  <div class="card-media" style="position: relative; overflow: hidden; border-radius: 15px;">
+    <!-- Yahan video tag controls ke sath lagaya hai taaki play/pause ho sake -->
+    <video controls style="width: 100%; height: 100%; object-fit: cover; display: block;">
+      <source src="s2.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+  <!-- Niche text display karne ke liye card caption -->
+  <div class="card-caption" style="padding: 10px; text-align: center; font-weight: bold; color: #f598b2;">
+    Video · Laughter blast 😂
+  </div>
+</div>
+
+      <!-- VIDEO CLIP PLACEHOLDER END -->
+      
+      <!-- PHOTO CLIP PLACEHOLDER START -->
+      <div class="memory-card">
+        <div class="card-media" style="background-image: linear-gradient(135deg, #fde7f0, #fbbacb);">
+          <div class="icon-overlay photo-icon"></div>
+          <span><img src="s1.jpeg" alt="Sister's Birthday Photo" width="100%" height="auto">
+</span>
+        </div>
+        <div class="card-caption">Photo · Sweet memory</div>
+      </div>
+      <!-- PHOTO CLIP PLACEHOLDER END -->
+    </div>
+  </section>
+
+  <!-- INTERACTIVE WISHES / COMMENT SECTION -->
+  <section class="wishes-section">
+    <h2 class="section-title">💌 Leave a Birthday Wish</h2>
+    <div class="comment-form">
+      <div class="form-group">
+        <input type="text" id="nameInput" placeholder="Your name" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <textarea id="messageInput" rows="3" placeholder="Write your sweet message..."></textarea>
+      </div>
+      <button class="btn" id="submitCommentBtn">✨ Post Wish ✨</button>
+    </div>
+
+    <div class="comments-feed" id="commentsFeed">
+      <!-- dynamic comments appear here -->
+    </div>
+  </section>
+
+  <!-- FOOTER & CONTACT -->
+  <footer class="footer">
+    <div class="thankyou">💖 Thank You for Celebrating! 💖</div>
+    <div class="contact-details">
+      <div class="contact-item"><span>📧</span> <span>raysujal063@gmail.com</span></div>
+      <div class="contact-item"><span>📞</span> <span>+91 76340 62865</span></div>
+    </div>
+    <div class="footer-note">Made with infinite love for my sister ✨</div>
+  </footer>
+
+  <script>
+    (function() {
+      // ---------- FLOATING HEARTS / CONFETTI EFFECT ----------
+      const canvas = document.getElementById('heartsCanvas');
+      const ctx = canvas.getContext('2d');
+      let width, height;
+      let particles = [];
+
+      function resizeCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+      }
+
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+
+      function createParticle() {
+        return {
+          x: Math.random() * width,
+          y: Math.random() * height - height,
+          size: Math.random() * 18 + 8,
+          speedY: Math.random() * 1.8 + 0.7,
+          speedX: (Math.random() - 0.5) * 0.6,
+          opacity: Math.random() * 0.7 + 0.3,
+          rotation: Math.random() * Math.PI * 2,
+          type: Math.random() < 0.7 ? 'heart' : 'sparkle',
+          color: `hsl(${Math.random() * 30 + 330}, 80%, 70%)` // pinkish tones
+        };
+      }
+
+      function drawHeart(ctx, x, y, size, rotation, opacity, color) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(rotation);
+        ctx.globalAlpha = opacity;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        const topCurveHeight = size * 0.3;
+        ctx.moveTo(0, topCurveHeight);
+        ctx.bezierCurveTo(0, 0, -size/2, 0, -size/2, topCurveHeight);
+        ctx.bezierCurveTo(-size/2, size*0.6, 0, size*0.8, 0, size);
+        ctx.bezierCurveTo(0, size*0.8, size/2, size*0.6, size/2, topCurveHeight);
+        ctx.bezierCurveTo(size/2, 0, 0, 0, 0, topCurveHeight);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      function drawSparkle(ctx, x, y, size, opacity, color) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.globalAlpha = opacity;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        for (let i = 0; i < 5; i++) {
+          let angle = (i * 4 * Math.PI) / 5 - Math.PI/2;
+          let dx = Math.cos(angle) * size * 0.5;
+          let dy = Math.sin(angle) * size * 0.5;
+          ctx.lineTo(dx, dy);
+          angle += Math.PI / 5;
+          dx = Math.cos(angle) * size * 0.2;
+          dy = Math.sin(angle) * size * 0.2;
+          ctx.lineTo(dx, dy);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+
+      function initParticles(count = 45) {
+        particles = [];
+        for (let i = 0; i < count; i++) {
+          particles.push(createParticle());
+        }
+      }
+
+      function animateParticles() {
+        ctx.clearRect(0, 0, width, height);
+        for (let i = 0; i < particles.length; i++) {
+          let p = particles[i];
+          p.y += p.speedY;
+          p.x += p.speedX;
+          p.rotation += 0.01;
+          if (p.y > height + 40 || p.x < -40 || p.x > width + 40) {
+            particles[i] = createParticle();
+            particles[i].y = -20;
+          }
+          
+          if (p.type === 'heart') {
+            drawHeart(ctx, p.x, p.y, p.size, p.rotation, p.opacity, p.color);
+          } else {
+            drawSparkle(ctx, p.x, p.y, p.size * 0.9, p.opacity, p.color);
+          }
+        }
+        requestAnimationFrame(animateParticles);
+      }
+
+      initParticles(50);
+      animateParticles();
+
+      // ---------- COMMENT SYSTEM ----------
+      const nameInput = document.getElementById('nameInput');
+      const messageInput = document.getElementById('messageInput');
+      const submitBtn = document.getElementById('submitCommentBtn');
+      const commentsFeed = document.getElementById('commentsFeed');
+
+      // Sample comments with timestamps and likes
+     
+      function formatTime(date) {
+        const now = new Date();
+        const diffMs = now - date;
+        const mins = Math.floor(diffMs / 60000);
+        if (mins < 1) return 'Just now';
+        if (mins < 60) return `${mins}m ago`;
+        const hours = Math.floor(mins / 60);
+        if (hours < 24) return `${hours}h ago`;
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      }
+
+      function renderComments() {
+        commentsFeed.innerHTML = '';
+        sampleComments.forEach((comment, index) => {
+          const card = document.createElement('div');
+          card.className = 'comment-card';
+          card.innerHTML = `
+            <div class="comment-header">
+              <span class="comment-name">${escapeHTML(comment.name)}</span>
+              <span class="comment-time">${formatTime(comment.timestamp)}</span>
+            </div>
+            <div class="comment-text">${escapeHTML(comment.message)}</div>
+            <button class="like-btn ${comment.liked ? 'liked' : ''}" data-index="${index}">
+              <span>❤️</span> <span class="like-count">${comment.likes}</span>
+            </button>
+          `;
+          commentsFeed.appendChild(card);
+        });
+
+        // attach like events
+        document.querySelectorAll('.like-btn').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            const idx = parseInt(this.getAttribute('data-index'), 10);
+            if (!isNaN(idx) && sampleComments[idx]) {
+              const com = sampleComments[idx];
+              if (!com.liked) {
+                com.likes += 1;
+                com.liked = true;
+              } else {
+                com.likes -= 1;
+                com.liked = false;
+              }
+              renderComments();
+            }
+          });
+        });
+      }
+
+      function escapeHTML(str) {
+        return String(str).replace(/[&<>"']/g, function(m) {
+          if (m === '&') return '&amp;';
+          if (m === '<') return '&lt;';
+          if (m === '>') return '&gt;';
+          if (m === '"') return '&quot;';
+          if (m === "'") return '&#39;';
+          return m;
+        });
+      }
+
+      function addComment(name, message) {
+        if (!name.trim() || !message.trim()) return;
+        sampleComments.unshift({
+          name: name.trim(),
+          message: message.trim(),
+          timestamp: new Date(),
+          likes: 0,
+          liked: false
+        });
+        renderComments();
+      }
+
+      submitBtn.addEventListener('click', () => {
+        const name = nameInput.value.trim();
+        const msg = messageInput.value.trim();
+        if (!name || !msg) {
+          alert('Please enter both name and a sweet message 💕');
+          return;
+        }
+        addComment(name, msg);
+        nameInput.value = '';
+        messageInput.value = '';
+      });
+
+      // initial render
+      renderComments();
+    })();
+  </script>
+</body>
+</html>
