@@ -683,100 +683,119 @@
       initParticles(50);
       animateParticles();
 
-      // ---------- COMMENT SYSTEM ----------
-      const nameInput = document.getElementById('nameInput');
-      const messageInput = document.getElementById('messageInput');
-      const submitBtn = document.getElementById('submitCommentBtn');
-      const commentsFeed = document.getElementById('commentsFeed');
+     // Wrap in an IIFE to match your closing syntax at the bottom
+(() => {
+  const nameInput = document.getElementById('nameInput');
+  const messageInput = document.getElementById('messageInput');
+  const submitBtn = document.getElementById('submitCommentBtn');
+  const commentsFeed = document.getElementById('commentsFeed');
 
-      // Sample comments with timestamps and likes
-     
-      function formatTime(date) {
-        const now = new Date();
-        const diffMs = now - date;
-        const mins = Math.floor(diffMs / 60000);
-        if (mins < 1) return 'Just now';
-        if (mins < 60) return `${mins}m ago`;
-        const hours = Math.floor(mins / 60);
-        if (hours < 24) return `${hours}h ago`;
-        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      }
+  // FIXED: Added missing sampleComments array declaration
+  const sampleComments = [
+    {
+      name: "Alex",
+      message: "This is a wonderful layout! Keep it up.",
+      timestamp: new Date(Date.now() - 5 * 60000), // 5 minutes ago
+      likes: 3,
+      liked: false
+    },
+    {
+      name: "Taylor",
+      message: "Sending love from New York! 💕",
+      timestamp: new Date(Date.now() - 2 * 3600000), // 2 hours ago
+      likes: 12,
+      liked: true
+    }
+  ];
 
-      function renderComments() {
-        commentsFeed.innerHTML = '';
-        sampleComments.forEach((comment, index) => {
-          const card = document.createElement('div');
-          card.className = 'comment-card';
-          card.innerHTML = `
-            <div class="comment-header">
-              <span class="comment-name">${escapeHTML(comment.name)}</span>
-              <span class="comment-time">${formatTime(comment.timestamp)}</span>
-            </div>
-            <div class="comment-text">${escapeHTML(comment.message)}</div>
-            <button class="like-btn ${comment.liked ? 'liked' : ''}" data-index="${index}">
-              <span>❤️</span> <span class="like-count">${comment.likes}</span>
-            </button>
-          `;
-          commentsFeed.appendChild(card);
-        });
+  function formatTime(date) {
+    const now = new Date();
+    const diffMs = now - date;
+    const mins = Math.floor(diffMs / 60000);
+    if (mins < 1) return 'Just now';
+    if (mins < 60) return `${mins}m ago`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `${hours}h ago`;
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
 
-        // attach like events
-        document.querySelectorAll('.like-btn').forEach(btn => {
-          btn.addEventListener('click', function(e) {
-            const idx = parseInt(this.getAttribute('data-index'), 10);
-            if (!isNaN(idx) && sampleComments[idx]) {
-              const com = sampleComments[idx];
-              if (!com.liked) {
-                com.likes += 1;
-                com.liked = true;
-              } else {
-                com.likes -= 1;
-                com.liked = false;
-              }
-              renderComments();
-            }
-          });
-        });
-      }
+  function renderComments() {
+    commentsFeed.innerHTML = '';
+    sampleComments.forEach((comment, index) => {
+      const card = document.createElement('div');
+      card.className = 'comment-card';
+      card.innerHTML = `
+        <div class="comment-header">
+          <span class="comment-name">${escapeHTML(comment.name)}</span>
+          <span class="comment-time">${formatTime(comment.timestamp)}</span>
+        </div>
+        <div class="comment-text">${escapeHTML(comment.message)}</div>
+        <button class="like-btn ${comment.liked ? 'liked' : ''}" data-index="${index}">
+          <span>❤️</span> <span class="like-count">${comment.likes}</span>
+        </button>
+      `;
+      commentsFeed.appendChild(card);
+    });
 
-      function escapeHTML(str) {
-        return String(str).replace(/[&<>"']/g, function(m) {
-          if (m === '&') return '&amp;';
-          if (m === '<') return '&lt;';
-          if (m === '>') return '&gt;';
-          if (m === '"') return '&quot;';
-          if (m === "'") return '&#39;';
-          return m;
-        });
-      }
-
-      function addComment(name, message) {
-        if (!name.trim() || !message.trim()) return;
-        sampleComments.unshift({
-          name: name.trim(),
-          message: message.trim(),
-          timestamp: new Date(),
-          likes: 0,
-          liked: false
-        });
-        renderComments();
-      }
-
-      submitBtn.addEventListener('click', () => {
-        const name = nameInput.value.trim();
-        const msg = messageInput.value.trim();
-        if (!name || !msg) {
-          alert('Please enter both name and a sweet message 💕');
-          return;
+    // attach like events
+    document.querySelectorAll('.like-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        const idx = parseInt(this.getAttribute('data-index'), 10);
+        if (!isNaN(idx) && sampleComments[idx]) {
+          const com = sampleComments[idx];
+          if (!com.liked) {
+            com.likes += 1;
+            com.liked = true;
+          } else {
+            com.likes -= 1;
+            com.liked = false;
+          }
+          renderComments();
         }
-        addComment(name, msg);
-        nameInput.value = '';
-        messageInput.value = '';
       });
+    });
+  }
 
-      // initial render
-      renderComments();
-    })();
+  function escapeHTML(str) {
+    return String(str).replace(/[&<>"']/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      if (m === '"') return '&quot;';
+      // FIXED: Corrected the single quote replacement string syntax
+      if (m === "'") return '&#39;'; 
+      return m;
+    });
+  }
+
+  function addComment(name, message) {
+    if (!name.trim() || !message.trim()) return;
+    sampleComments.unshift({
+      name: name.trim(),
+      message: message.trim(),
+      timestamp: new Date(),
+      likes: 0,
+      liked: false
+    });
+    renderComments();
+  }
+
+  submitBtn.addEventListener('click', () => {
+    const name = nameInput.value.trim();
+    const msg = messageInput.value.trim();
+    if (!name || !msg) {
+      alert('Please enter both name and a sweet message 💕');
+      return;
+    }
+    addComment(name, msg);
+    nameInput.value = '';
+    messageInput.value = '';
+  });
+
+  // initial render
+  renderComments();
+})();
+
   </script>
 </body>
 </html>
